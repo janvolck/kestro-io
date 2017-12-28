@@ -1,0 +1,9 @@
+rootProject.name = 'io'
+include 'io-core'
+include 'io-karaf'
+include 'io-pi'
+include 'io-services'
+include 'io-rest'
+include 'io-ui'
+include 'io-karaf-feature'
+

@@ -1,0 +1,18 @@
+repositories {
+    maven {
+        name 'Sonatype OSS Maven Repositor'
+        url 'https://oss.sonatype.org/content/groups/public'
+    }
+}
+
+dependencies {
+    compile project(':io-core')
+    compile 'org.osgi:org.osgi.service.component:1.3.0'
+    compile 'com.pi4j:pi4j-core:1.2-SNAPSHOT'
+}
+
+bundle {
+    instructions << [
+            'Bundle-Description': 'Kestro IO Raspberry Pi implementations.'
+    ]
+}

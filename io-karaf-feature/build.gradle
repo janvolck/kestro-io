@@ -1,0 +1,128 @@
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "gradle.plugin.com.github.lburgazzoli:gradle-karaf-plugin:0.0.48"
+    }
+}
+
+repositories {
+    maven {
+        name 'Sonatype OSS Maven Repositor'
+        url 'https://oss.sonatype.org/content/groups/public'
+    }
+}
+
+apply plugin: 'com.github.lburgazzoli.karaf'
+
+configurations {
+    core {
+        transitive = false
+    }
+
+    services {
+        transitive = false
+    }
+
+    rest {
+        transitive = false
+    }
+
+    pi {
+        transitive = false
+    }
+}
+
+dependencies {
+    core project(':io-core')
+
+    services project(':io-services')
+    services project(':io-karaf')
+
+    rest project(':io-rest')
+
+    pi project(':io-pi')
+    pi 'com.pi4j:pi4j-core:1.2-SNAPSHOT'
+}
+
+karaf {
+    features {
+        xsdVersion  = '1.2.0'
+        description = 'Karaf Archive for Kestro IO.'
+        name = 'Kestro IO'
+
+        includeProject = false
+
+        repository "mvn:org.apache.karaf.features/standard/4.1.1/xml/features"
+        repository "mvn:org.code-house.jackson/features/2.8.7/xml/features"
+        repository "mvn:com.eclipsesource.jaxrs/features/5.3.1/xml/features"
+
+        feature {
+            name        = 'io-core'
+            description = 'Kestro IO core.'
+
+            configurations 'core'
+        }
+
+        feature {
+            name        = 'io-services'
+            description = 'Kestro IO core services.'
+
+            feature 'scr'
+            feature 'webconsole'
+            feature 'pax-http-jetty'
+            feature 'jackson-core'
+            feature 'jackson-databind'
+
+            feature 'io-core'
+
+            configurations 'services'
+        }
+
+        feature {
+            name        = 'io-rest'
+            description = 'Kestro IO REST services.'
+
+            feature 'jax-rs-connector'
+            feature 'jax-rs-provider-moxy'
+            feature 'jax-rs-provider-gson'
+
+
+            feature 'io-core'
+            feature 'io-services'
+
+            configurations 'rest'
+        }
+
+        feature {
+            name        = 'io-pi'
+            description = 'Kestro IO Raspberry Pi support.'
+
+            feature 'io-core'
+            feature 'io-rest'
+
+            configurations 'pi'
+        }
+    }
+
+    kar {
+        archiveName = 'kestro-io'
+    }
+}
+
+deployBundleToKaraf {
+    enabled false
+}
+
+task deployFeatureToKaraf(type: Copy) {
+    dependsOn 'generateKar'
+
+    from karaf.kar.outputPath
+    into "$System.env.HOME" + "/bin/apache-karaf-4.1.1/deploy/"
+
+    inputs.file karaf.kar.outputPath
+    outputs.file "$System.env.HOME" + "/bin/apache-karaf-4.1.1/deploy/" + jar.archiveName
+}

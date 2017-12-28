@@ -1,0 +1,10 @@
+dependencies {
+    compile project(':io-core')
+    compile 'javax.ws.rs:javax.ws.rs-api:2.0.1'
+}
+
+bundle {
+    instructions << [
+            'Bundle-Description': 'Kestro IO REST endpoint.'
+    ]
+}

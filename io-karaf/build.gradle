@@ -1,0 +1,11 @@
+dependencies {
+	compile project(':io-core')
+	compile 'org.apache.karaf.shell:org.apache.karaf.shell.console:4+'
+}
+
+bundle {
+    instructions << [
+            'Bundle-Description': 'Kestro IO Karaf integration.',
+            'Karaf-Commands': '*'
+    ]
+}
